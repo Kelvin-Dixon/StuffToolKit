@@ -7,7 +7,7 @@ function Write-Log {
 
     try {
         if (-not ($script:LogFilePath)) {
-            Write-Error "Log file path has not been set. Please run Set-LogFile first."
+            Write-Error "Log file path has not been set. Please use Set-LogFile first."
             return
         }
         #Combine the preferred timestamp format with the -f operator for a clean, single line.
