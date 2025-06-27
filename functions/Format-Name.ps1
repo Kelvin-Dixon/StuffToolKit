@@ -3,12 +3,12 @@ function Format-Name {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory=$false, ValueFromPipeline=$true)]
-        [string]$name
+        [string]$inputString
     )
 
     process {
         # Trim input using Compress-String and return empty string for null, empty, or variations of "null"
-        $processedName = Compress-String -inputString $name 
+        $processedName = Compress-String -inputString $inputString 
         if (-not $processedName -or $processedName -match '^(?i)null$') { return "" }
 
         # Remove leading "-" followed by any spaces
@@ -84,7 +84,7 @@ function Format-Name {
                 # Split by hyphen, recursively format each part, then rejoin
                 $hyphenSubParts = $currentPart -split "-"
                 $reformattedHyphenSubParts = $hyphenSubParts | ForEach-Object {
-                    Format-Name -name $_ # Recursive call
+                    Format-Name -inputString $_ # Recursive call
                 }
                 $formattedCurrentPart = $reformattedHyphenSubParts -join "-" # Rejoin with hyphen
             }

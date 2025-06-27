@@ -1,9 +1,9 @@
 function Convert-NumericHtmlEntity {
     param (
-        [string]$HtmlEncodedString
+        [string]$inputString
     )
     $pattern = '&#(\d+);?'
-    $regexDecodedString = [regex]::Replace($HtmlEncodedString, $pattern, {
+    $regexDecodedString = [regex]::Replace($inputString, $pattern, {
         param($match)
         return [char][int]$match.Groups[1].Value
     })

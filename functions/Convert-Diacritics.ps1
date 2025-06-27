@@ -8,7 +8,7 @@ function Convert-Diacritics {
 
     process {
         if (-not $inputString) { return "" } # Handle null or empty input early
-        $decodedInputString = Convert-NumericHtmlEntity -HtmlEncodedString $inputString
+        $decodedInputString = Convert-NumericHtmlEntity -inputString $inputString
 
         $outputBuilder = New-Object System.Text.StringBuilder
 
