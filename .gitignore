@@ -1,4 +1,6 @@
 .vscode/
 logs/
 configs/
-tests/
+tests/*
+!tests/Test-Multi.ps1
+!tests/Boilerplate.ps1
