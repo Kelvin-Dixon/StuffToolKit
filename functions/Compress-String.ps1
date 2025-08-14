@@ -13,6 +13,9 @@ function Compress-String {
         # Trim the string
         $outputString = $inputString.Trim()
 
+         # Replace any sequence of one or more whitespace characters with a single space
+        $outputString = $outputString -replace ' +', ' '
+
         # Only apply regex if necessary and string is not empty after trim
         # Removes trailing spaces, hyphens, dots, or commas
         if ($outputString -and $outputString -match '[ \-\.,]+$') {

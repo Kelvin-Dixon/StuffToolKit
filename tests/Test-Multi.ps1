@@ -20,7 +20,9 @@ Clear-Host
 # --- Test Case Definitions (Your complete, original data) ---
 
 $numericHtmlEntityTestCases = @(
-    @{ Input = "Hello &#x201C;World&#8221; &#169; 2024 &#x2665;"; Expected = 'Hello “World” © 2024 ♥' }
+    @{ Input = "Hello &#x201C;World&#8221; &#169; 2024 &#x2665;"; Expected = 'Hello “World” © 2024 ♥' },
+    @{ Input = "Ã¯&#x4;Å½ Christine Lewis-West" ; Expected = "Christine Lewis-West" },
+    @{ Input = "779 COLOMBO ST T/A The Victoria Pub & Dining Rooms"; Expected = "779 COLOMBO ST T/A The Victoria Pub & Dining Rooms" }
 )
 
 $plainTestCases = @(
@@ -28,14 +30,16 @@ $plainTestCases = @(
     @{ Input = @"
 Don't do "this" anymore
 "@ ; Expected = "Don't do ""this"" anymore" },
-    @{ Input = "   This has    extra spaces and diacritics!   " ; Expected = "This has    extra spaces and diacritics!" },
+    @{ Input = "   This has    extra spaces and diacritics!   " ; Expected = "This has extra spaces and diacritics!" },
     @{ Input = "Fiancé" ; Expected = "Fiance" },
+    @{ Input = "Abdul ." ; Expected = "Abdul" },
     @{ Input = "Crème brûlée" ; Expected = "Creme brulee" },
     @{ Input = "Test String." ; Expected = "Test String" },
     @{ Input = "Test String-" ; Expected = "Test String" },
     @{ Input = "Test String, " ; Expected = "Test String" },
     @{ Input = "Test String - " ; Expected = "Test String" },
     @{ Input = "&#8217;s test" ; Expected = "'s test" },
+    @{ Input = "Ã¯&#x4;Å½ Christine Lewis-West" ; Expected = "Christine Lewis-West" },
     @{ Input = " " ; Expected = "" },
     @{ Input = $null ; Expected = "" }
 )
@@ -111,6 +115,15 @@ $OverallFailCount += $results.FailCount
 $results = Invoke-TestCases -TestName "Format-Name" -FunctionName "Format-Name" -TestCases $nameTestCases
 $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
+
+$config = Get-NavigaConfig
+if ($config) {
+    Write-Host "Naviga Config Loaded Successfully:" -ForegroundColor Green
+    Write-Host "ClientId: $($config.ClientId)"
+    Write-Host "RootURI: $($config.RootURI)"
+} else {
+    Write-Host "Failed to load Naviga Config." -ForegroundColor Red
+}
 
 # --- Final Summary ---
 Write-Host "--- All Tests Completed ---" -ForegroundColor Cyan
