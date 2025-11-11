@@ -9,7 +9,7 @@ function Convert-Plain {
     process {
         # Fast exit for empty strings
         if (-not $inputString) { return "" }
-        $decodedInputString = Convert-NumericHtmlEntity -inputString $inputString
+        $decodedInputString = Repair-HtmlEntities -inputString $inputString
 
         # Use a StringBuilder for efficient string handling
         $sb = New-Object System.Text.StringBuilder $decodedInputString.Length
