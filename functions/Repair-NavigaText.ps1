@@ -8,11 +8,14 @@ function Repair-NavigaText {
     )
     process {
         if (-not $inputString) { return "" } # Handle null or empty input early
-        $decodedInputString = Repair-HtmlEntities -inputString $inputString
-
+        
+        $patched = $InputString `
+            -replace '(&#x[0-9A-Fa-f]+)(?!;)', '$1;' `
+            -replace '(&#[0-9]+)(?!;)', '$1;'
+        $patched = Convert-Diacritics -inputString $patched
         $outputBuilder = New-Object System.Text.StringBuilder
 
-        foreach ($char in $decodedInputString.ToCharArray()) {
+        foreach ($char in $patched.ToCharArray()) {
             $codePoint = [int][char]$char
 
             # Preserve newlines (if the character is a newline, we append it directly)
@@ -21,8 +24,9 @@ function Repair-NavigaText {
             }
             # Keep valid ranges for diacritics
             elseif (($codePoint -ge 0x0021 -and $codePoint -le 0x007E) -or # Basic Latin (printable)
-                    ($codePoint -ge 0x00A1 -and $codePoint -le 0x00FF) -or # Latin-1 Supplement
-                    ($codePoint -ge 0x0100 -and $codePoint -le 0x017E)) { # Latin Extended-A (some common diacritics)
+                ($codePoint -ge 0x00A1 -and $codePoint -le 0x00FF) -or # Latin-1 Supplement
+                ($codePoint -ge 0x0100 -and $codePoint -le 0x017E)) {
+                # Latin Extended-A (some common diacritics)
                 [void]$outputBuilder.Append($char)
             }
             # Replace mapped characters
@@ -36,13 +40,15 @@ function Repair-NavigaText {
         }
 
         # Return trimmed and formatted string
-        $patched= Compress-String -inputString $outputBuilder.ToString() 
-    }
+        $finalString = Compress-String -inputString $outputBuilder.ToString() 
 
-        $fixed = Repair-HtmlEntities -InputString $patched
+        foreach ($pair in $macronMap.GetEnumerator()) {
+            $finalString = $finalString -replace [regex]::Escape($pair.Key), $pair.Value
+        }
 
+        #remove any unwanted characters:
+        $finalString = $finalString -replace '\|', '-' #replace pipes with dashes
 
-        
-        return $fixed
+        return $finalString
     }
 }

@@ -10,7 +10,10 @@ function Invoke-TestCases {
         [string]$FunctionName,
 
         [Parameter(Mandatory = $true)]
-        [array]$TestCases
+        [array]$TestCases,
+
+        [Parameter(Mandatory = $true)]
+        [bool]$Show = $false   # Default to false
     )
 
     # Define the format string once. This is our template.
@@ -40,7 +43,7 @@ function Invoke-TestCases {
         }
         
         # Build and write the single, perfectly formatted output line
-        if ($status -eq "FAIL") {
+        if ($status -eq "FAIL" -or $Show) {
             $outputLine = $formatTemplate -f "Input: '$original'", "Expected: '$expected'", "Result: '$result'", "Status: '$status'"
             Write-Host $outputLine -ForegroundColor $color
         }
