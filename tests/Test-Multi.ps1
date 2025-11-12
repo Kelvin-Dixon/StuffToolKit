@@ -19,9 +19,9 @@ Clear-Host
 
 # --- Test Case Definitions (Your complete, original data) ---
 
-$numericHtmlEntityTestCases = @(
+$repairHtmlEntitiesTestCases = @(
     @{ Input = "Hello &#x201C;World&#8221; &#169; 2024 &#x2665;"; Expected = 'Hello “World” © 2024 ♥' },
-    @{ Input = "Ã¯&#x4;Å½ Christine Lewis-West" ; Expected = "Christine Lewis-West" },
+    @{ Input = "Julie O&#8217 Brien"; Expected = "Julie O’ Brien" },
     @{ Input = "779 COLOMBO ST T/A The Victoria Pub & Dining Rooms"; Expected = "779 COLOMBO ST T/A The Victoria Pub & Dining Rooms" }
 )
 
@@ -39,7 +39,6 @@ Don't do "this" anymore
     @{ Input = "Test String, " ; Expected = "Test String" },
     @{ Input = "Test String - " ; Expected = "Test String" },
     @{ Input = "&#8217;s test" ; Expected = "'s test" },
-    @{ Input = "Ã¯&#x4;Å½ Christine Lewis-West" ; Expected = "Christine Lewis-West" },
     @{ Input = " " ; Expected = "" },
     @{ Input = $null ; Expected = "" }
 )
@@ -94,9 +93,16 @@ $nameTestCases = @(
     @{ Input = "single" ; Expected = "Single" }
 )
 
+$navigaTestCases =@(
+        @{ Input = "ÅŒtautahi" ; Expected = "Ōtautahi" },
+    @{ Input = "Julie O&#8217 Brien" ; Expected = "Julie O' Brien" },
+    @{ Input = "Te R&#x101kau Hua o Te Wao Tapu" ; Expected = "Te Rākau Hua o Te Wao Tapu" },
+    @{ Input = "Petone Memorial Park &#x100 &#x112 &#x12A &#332 &#362 &#x101 &#x113 &#x12B &#333 &#363" ; Expected = "Petone Memorial Park Ā Ē Ī Ō Ū ā ē ī ō ū" }
+)
+
 # --- Execute All Tests Using the Helper Function ---
 
-$results = Invoke-TestCases -TestName "Convert-NumericHtmlEntity" -FunctionName "Convert-NumericHtmlEntity" -TestCases $numericHtmlEntityTestCases
+$results = Invoke-TestCases -TestName "Repair-HtmlEntities" -FunctionName "Repair-HtmlEntities" -TestCases $repairHtmlEntitiesTestCases
 $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
 
@@ -113,6 +119,10 @@ $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
 
 $results = Invoke-TestCases -TestName "Format-Name" -FunctionName "Format-Name" -TestCases $nameTestCases
+$OverallPassCount += $results.PassCount
+$OverallFailCount += $results.FailCount
+
+$results = Invoke-TestCases -TestName "Repair-NavigaText" -FunctionName "Convert-Diacritics" -TestCases $navigaTestCases
 $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
 

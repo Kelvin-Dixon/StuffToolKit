@@ -3,13 +3,13 @@
 # =======================================================================
 function Invoke-TestCases {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$TestName,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [string]$FunctionName,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [array]$TestCases
     )
 
@@ -23,24 +23,27 @@ function Invoke-TestCases {
     Write-Host "--- Testing $TestName ---" -ForegroundColor Cyan
 
     foreach ($case in $TestCases) {
-        $input = $case.Input
+        $original = $case.Input
         $expected = $case.Expected
-        $result = & $FunctionName -inputString $input
+        $result = & $FunctionName -inputString $original
         
         # Check if the test passed or failed to set the status and color
         if ($result -eq $expected) {
-            $status = "Status: PASS"
-            $color  = "Green"
+            $status = "PASS"
+            $color = "Green"
             $localPassCount++
-        } else {
-            $status = "Status: FAIL"
-            $color  = "Red"
+        }
+        else {
+            $status = "FAIL"
+            $color = "Red"
             $localFailCount++
         }
         
         # Build and write the single, perfectly formatted output line
-        $outputLine = $formatTemplate -f "Input: '$input'", "Expected: '$expected'", "Result: '$result'", $status
-        Write-Host $outputLine -ForegroundColor $color
+        if ($status -eq "FAIL") {
+            $outputLine = $formatTemplate -f "Input: '$original'", "Expected: '$expected'", "Result: '$result'", "Status: '$status'"
+            Write-Host $outputLine -ForegroundColor $color
+        }
     }
 
     # Write the summary for this specific test group
