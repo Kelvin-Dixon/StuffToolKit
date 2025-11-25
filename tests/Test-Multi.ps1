@@ -101,6 +101,37 @@ $navigaTestCases =@(
     @{ Input = "I Hate | Pipes" ; Expected = "I Hate - Pipes" }
 )
 
+$pubDateTestCases = @(
+    # --- WWK (Mon, Wed, Fri) ---
+    @{ Input = "WWK-ED1-ZN-20251119" ; Expected = "WWK-ED1-ZN-20251124" }, # Older Wed → Mon
+    @{ Input = "WWK-ED1-ZN-20251121" ; Expected = "WWK-ED1-ZN-20251124" }, # Older Fri → Mon
+    @{ Input = "WWK-ED1-ZN-20251124" ; Expected = "WWK-ED1-ZN-20251124" }, # Today Mon → unchanged
+    @{ Input = "WWK-ED1-ZN-20251125" ; Expected = "WWK-ED1-ZN-20251126" }, # Tomorrow Tue → roll forward to Wed
+
+    # --- XYZ (Tue, Thu) ---
+    @{ Input = "XYZ-ED1-ZN-20251120" ; Expected = "XYZ-ED1-ZN-20251125" }, # Older Thu → Tue
+    @{ Input = "XYZ-ED1-ZN-20251124" ; Expected = "XYZ-ED1-ZN-20251125" }, # Today Mon → Tue
+    @{ Input = "XYZ-ED1-ZN-20251125" ; Expected = "XYZ-ED1-ZN-20251125" }, # Tomorrow Tue  → unchanged
+    @{ Input = "XYZ-ED1-ZN-20251126" ; Expected = "XYZ-ED1-ZN-20251127" }, # Wed  → Thu
+    @{ Input = "XYZ-ED1-ZN-20251127" ; Expected = "XYZ-ED1-ZN-20251127" }, # Thu  → unchanged
+
+    # --- ABC (Sun only) ---
+    @{ Input = "ABC-ED1-ZN-20251116" ; Expected = "ABC-ED1-ZN-20251130" }, # Older Sun → next Sun (30 Nov)
+    @{ Input = "ABC-ED1-ZN-20251123" ; Expected = "ABC-ED1-ZN-20251130" }, # Yesterday Sun → next Sun (30 Nov)
+    @{ Input = "ABC-ED1-ZN-20251124" ; Expected = "ABC-ED1-ZN-20251130" }, # Today Mon → roll forward to Sun (30 Nov)
+    @{ Input = "ABC-ED1-ZN-20251125" ; Expected = "ABC-ED1-ZN-20251130" }, # Tomorrow Tue → roll forward to Sun (30 Nov)
+    @{ Input = "ABC-ED1-ZN-20251130" ; Expected = "ABC-ED1-ZN-20251130" }, # Next Sun → unchanged
+
+    # --- Unknown pub ---
+    @{ Input = "ZZZ-ED1-ZN-20251119" ; Expected = "ZZZ-ED1-ZN-20251126" }, # Older Wed → next Wed
+    @{ Input = "ZZZ-ED1-ZN-20251120" ; Expected = "ZZZ-ED1-ZN-20251127" }, # Older Thu → next Thu
+    @{ Input = "ZZZ-ED1-ZN-20251124" ; Expected = "ZZZ-ED1-ZN-20251124" }, # Today Mon → unchanged
+    @{ Input = "ZZZ-ED1-ZN-20251125" ; Expected = "ZZZ-ED1-ZN-20251125" }, # Tomorrow Tue → unchanged
+
+    # --- Invalid pattern ---
+    @{ Input = "RandomFile.pdf" ; Expected = "RandomFile.pdf" } # unchanged
+)
+
 # --- Execute All Tests Using the Helper Function ---
 
 $results = Invoke-TestCases -TestName "Repair-HtmlEntities" -FunctionName "Repair-HtmlEntities" -TestCases $repairHtmlEntitiesTestCases -Show $false
@@ -123,7 +154,11 @@ $results = Invoke-TestCases -TestName "Format-Name" -FunctionName "Format-Name" 
 $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
 
-$results = Invoke-TestCases -TestName "Repair-NavigaText" -FunctionName "Repair-NavigaText" -TestCases $navigaTestCases -Show $true
+$results = Invoke-TestCases -TestName "Repair-NavigaText" -FunctionName "Repair-NavigaText" -TestCases $navigaTestCases -Show $false
+$OverallPassCount += $results.PassCount
+$OverallFailCount += $results.FailCount
+
+$results = Invoke-TestCases -TestName "Repair-PubDate" -FunctionName "Repair-PubDate" -TestCases $pubDateTestCases -Show $false
 $OverallPassCount += $results.PassCount
 $OverallFailCount += $results.FailCount
 
